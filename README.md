@@ -201,11 +201,11 @@ The data used for training the model is formatted in `h5ad`.  For other formats,
 You can directly run the following command to complete all the training steps. Be aware to change the file path to your own.
 
 ```sh
-### Mizrak
-CUDA_VISIBLE_DEVICES=1 python VAE_train.py --data_dir '/home/workplace/cfDiffusion/dataset/Mizrak_filtered.h5ad' --num_genes 26791 --save_dir '/home/workplace/cfDiffusion/checkpoint/VAE/Mizrak' --max_steps 800001 &
+### Camda
+CUDA_VISIBLE_DEVICES=1 python VAE_train.py --data_dir '/home/daniilf/scDiffusion/data/onek1k_annotated_train_release_filtered.h5ad' --num_genes 1200 --save_dir '/home/daniilf/cfDiffusion-aml/checkpoint/VAE/camda' --max_steps 800001 &
 
-CUDA_VISIBLE_DEVICES=1 python cell_train.py --data_dir '/home/workplace/cfDiffusion/dataset/Mizrak_filtered.h5ad' --vae_path '/home/workplace/cfDiffusion/checkpoint/VAE/Mizrak/model_seed=0_step=800000.pt' \
-    --model_name 'Mizrak_diffusion_based_on_vae800000' --lr_anneal_steps 800001 --save_dir '/home/workplace/cfDiffusion/checkpoint' --num_classes 17 --branch 0  --cache_interval 5  --non_uniform False &
+CUDA_VISIBLE_DEVICES=1 python cell_train.py --data_dir '/home/daniilf/scDiffusion/data/onek1k_annotated_train_release_filtered.h5ad' --vae_path '/home/daniilf/cfDiffusion-aml/checkpoint/VAE/camda/model_seed=0_step=800000.pt' \
+    --model_name 'camda_diffusion_based_on_vae800000' --lr_anneal_steps 800001 --save_dir '/home/daniilf/cfDiffusion-aml/checkpoint' --num_classes 17 --branch 0  --cache_interval 5  --non_uniform False &
 ```
 
 Below are the complete steps for the training process:
@@ -222,14 +222,10 @@ First, modify the Autoencoder checkpoint path to match your trained Autoencoder.
 In the `cell_sample.py`, adjust the `model_path` to match the trained backbone model. Also, update the `sample_dir` to your local path. The condition can be set in "main" function. Running the file will generate new latent embeddings under the given conditions. You can decode these embeddings using Decoder.
 
 ```sh
-### Mizrak (single condition)
-python cell_sample.py --model_path '/home/workplace/cfDiffusion/checkpoint/Mizrak_diffusion_based_on_vae800000/model800000.pt' \
-  --sample_dir '/home/workplace/cfDiffusion/generation/Mizrak' \
-  --num_classes 17 --branch 0 --cache_interval 5 --non_uniform False
- 
- ### muris_mam_spl_T_B (multi-condition)
- CUDA_VISIBLE_DEVICES=1 python cell_sample.py   --num_classes 2 2 --branch 0  --cache_interval 5  --non_uniform False \
-   --model_path '/home/workplace/cfDiffusion/checkpoint/muris_mam_spl_T_B_diffusion_based_on_vae800000/model800000.pt'  --sample_dir '/home/workplace/cfDiffusion/generation/muris_mam_spl_T_B'
+### camda (single condition)
+python cell_sample.py --model_path '/home/daniilf/cfDiffusion-aml/checkpoint/camda_diffusion_based_on_vae800000/model800000.pt' \
+  --sample_dir '/home/daniilf/cfDiffusion-aml/generation/camda' \
+  --num_classes 14 --branch 0 --cache_interval 5 --non_uniform False
 ```
 
 # Experiments reproduce
