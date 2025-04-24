@@ -205,7 +205,7 @@ You can directly run the following command to complete all the training steps. B
 CUDA_VISIBLE_DEVICES=1 python VAE_train.py --data_dir '/home/daniilf/scDiffusion/data/onek1k_annotated_train_release_filtered.h5ad' --num_genes 1200 --save_dir '/home/daniilf/cfDiffusion-aml/checkpoint/VAE/camda' --max_steps 800001 &
 
 CUDA_VISIBLE_DEVICES=1 python cell_train.py --data_dir '/home/daniilf/scDiffusion/data/onek1k_annotated_train_release_filtered.h5ad' --vae_path '/home/daniilf/cfDiffusion-aml/checkpoint/VAE/camda/model_seed=0_step=800000.pt' \
-    --model_name 'camda_diffusion_based_on_vae800000' --lr_anneal_steps 800001 --save_dir '/home/daniilf/cfDiffusion-aml/checkpoint' --num_classes 17 --branch 0  --cache_interval 5  --non_uniform False &
+    --model_name 'camda_diffusion_based_on_vae800000' --lr_anneal_steps 800001 --save_dir '/home/daniilf/cfDiffusion-aml/checkpoint' --num_classes 14 --branch 0  --cache_interval 5  --non_uniform False &
 ```
 
 Below are the complete steps for the training process:
