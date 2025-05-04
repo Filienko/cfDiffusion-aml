@@ -59,25 +59,30 @@ def load_data(
         raise ValueError("unspecified data directory")
 
     adata = sc.read_h5ad(data_dir)
+    print("BEFORE", adata.shape)
     sc.pp.filter_genes(adata, min_cells=3)
     sc.pp.filter_cells(adata, min_genes=10)
     adata.var_names_make_unique()
-
+    print("AFTER", adata.shape)
     # if generate ood data, left this as the ood data
-    selected_cells = (adata.obs['organ'] != 'mammary') | (adata.obs['celltype'] != 'B cell')  
-    adata = adata[selected_cells, :]  
+    #selected_cells = (adata.obs['organ'] != 'mammary') | (adata.obs['celltype'] != 'B cell')  
+    #adata = adata[selected_cells, :]  
 
-    classes1 = adata.obs['celltype'].values
+    classes1 = adata.obs['cell_type'].values
     label_encoder = LabelEncoder()
     labels = classes1
     label_encoder.fit(labels)
     classes1 = label_encoder.transform(labels)
-    
-    classes2 = adata.obs['organ'].values
-    label_encoder = LabelEncoder()
-    labels = classes2
-    label_encoder.fit(labels)
-    classes2 = label_encoder.transform(labels)
+    print("original celltype classes", classes1)
+    import pickle
+    with open('label_encoder_cl.pkl', 'wb') as f:
+        pickle.dump(label_encoder, f)
+
+    classes2 = adata.obs['cell_type'].values
+    #label_encoder = LabelEncoder()
+    #labels = classes2
+    #label_encoder.fit(labels)
+    #classes2 = label_encoder.transform(labels)
 
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)

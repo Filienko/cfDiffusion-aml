@@ -1,7 +1,7 @@
 import copy
 import functools
 import os
-
+import torch
 import blobfile as bf
 import torch as th
 import torch.distributed as dist
@@ -150,25 +150,50 @@ class TrainLoop:
                 opt_checkpoint, map_location=dist_util.dev()
             )
             self.opt.load_state_dict(state_dict)
-
     def run_loop(self):
-        while (
-            not self.lr_anneal_steps
-            or self.step + self.resume_step < self.lr_anneal_steps
-        ):
-            batch, cond = next(self.data)
-            self.run_step(batch, cond)
-            # if self.step % self.log_interval == 0:
-            #     logger.dumpkvs()
-            if self.step % self.save_interval == 0:
-                self.save()
-                # Run for a finite amount of time in integration tests.
-                if os.environ.get("DIFFUSION_TRAINING_TEST", "") and self.step > 0:
+        step_count = 0
+        try:
+            while (
+                not self.lr_anneal_steps
+                or step_count + self.resume_step < self.lr_anneal_steps
+            ):
+                batch, cond = next(self.data)
+                #print(f"Running step {step_count} with batch shape {batch.shape}")
+                self.run_step(batch, cond)
+                
+                if step_count % self.save_interval == 0:
+                    self.save()
+                    print(f"Saved checkpoint at step {step_count}")
+                    
+                step_count += 1
+                self.step = step_count
+                
+                if step_count % 1000 == 0:
+                    torch.cuda.empty_cache()
+                    print("Step", step_count)
+                
+                if os.environ.get("DIFFUSION_TRAINING_TEST", "") and step_count > 0:
                     return
-            self.step += 1
-        # Save the last checkpoint if it wasn't already saved.
-        if (self.step - 1) % self.save_interval != 0:
-            self.save()
+                
+        except Exception as e:
+            print(f"Exception encountered during training: {e}")
+            import traceback
+            traceback.print_exc()
+            self.save()  # Save before exiting
+
+    def run_step_1(self, batch, cond):
+        print(f"Starting run_step with batch shape {batch.shape}")
+        print("Starting forward_backward")
+        self.forward_backward(batch, cond)
+        print("Starting optimize")
+        took_step = self.mp_trainer.optimize(self.opt)
+        print(f"Optimize result: {took_step}")
+        if took_step:
+            print("Updating EMA")
+            self._update_ema()
+        print("Annealing LR")
+        self._anneal_lr()
+        print("Step completed")
 
     def run_step(self, batch, cond):
         self.forward_backward(batch, cond)
