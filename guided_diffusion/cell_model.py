@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-from .nn import (
+from guided_diffusion.nn import (
     linear,
     timestep_embedding,
 )
@@ -64,7 +64,7 @@ class ResidualBlock(nn.Module):
   
 class Cell_Unet(nn.Module):  
     def __init__(self, input_dim=2, hidden_dim=[2000,1000,500,500], \
-        dropout=0.1, num_classes=12, num_steps=1000, \
+        dropout=0.1, num_classes=[12], num_steps=1000, \
         branch = 0, cache_interval=None, non_uniform=False):  
         super(Cell_Unet, self).__init__()  
         self.hidden_dim = hidden_dim  
@@ -73,8 +73,12 @@ class Cell_Unet(nn.Module):
   
         self.time_embedding = TimeEmbedding(hidden_dim[0])
         
+        # FIXED: Handle num_classes properly for both single value and lists
+        if isinstance(num_classes, int):
+            num_classes = [num_classes]
         
-        self.label_embedding = LabelEmbedding(sum(num_classes), hidden_dim[0])
+        total_classes = sum(num_classes)
+        self.label_embedding = LabelEmbedding(total_classes, hidden_dim[0])
   
         # Create layers dynamically  
         self.layers = nn.ModuleList()

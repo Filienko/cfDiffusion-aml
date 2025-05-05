@@ -13,7 +13,7 @@ def diffusion_defaults(diffusion_steps=1000):
     return dict(
         learn_sigma=False,
         diffusion_steps=diffusion_steps,
-        noise_schedule="linear",
+        noise_schedule="cosine",
         timestep_respacing="",
         use_kl=False,
         predict_xstart=False,
@@ -28,7 +28,7 @@ def model_and_diffusion_defaults(diffusion_steps=1000):
     """
     res = dict(
         input_dim = 128,
-        hidden_dim = [512,512,256,128],
+        hidden_dim = [512,512,256,256,128],
         dropout = 0.0,
     )
     res.update(diffusion_defaults(diffusion_steps=diffusion_steps))
