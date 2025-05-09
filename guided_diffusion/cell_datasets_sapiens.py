@@ -68,6 +68,8 @@ def load_data(
     
     print("BEFORE filtering genes and cells:", adata.shape)
     sc.pp.filter_cells(adata, min_genes=10)
+    sc.pp.filter_genes(adata, min_cells=3)
+
     adata.var_names_make_unique()
     print("AFTER filtering:", adata.shape)
     

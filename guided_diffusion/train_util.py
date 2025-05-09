@@ -167,11 +167,11 @@ class TrainLoop:
                     
                 step_count += 1
                 self.step = step_count
-                
+                '''
                 if step_count % 1000 == 0:
                     torch.cuda.empty_cache()
                     print("Step", step_count)
-                
+                '''
                 if os.environ.get("DIFFUSION_TRAINING_TEST", "") and step_count > 0:
                     return
                 
@@ -196,12 +196,13 @@ class TrainLoop:
         print("Step completed")
 
     def run_step(self, batch, cond):
-        self.forward_backward(batch, cond)
+        loss = self.forward_backward(batch, cond)
         took_step = self.mp_trainer.optimize(self.opt)
         if took_step:
             self._update_ema()
         self._anneal_lr()
-        # self.log_step()
+        if self.step % 1000 == 0:
+            print(f"Step {self.step}, Loss: {loss}")
 
     def forward_backward(self, batch, cond):
         self.mp_trainer.zero_grad()

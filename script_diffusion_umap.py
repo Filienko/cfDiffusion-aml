@@ -15,7 +15,7 @@ from VAE.VAE_model import VAE
 
 def load_VAE():
     autoencoder = VAE(
-        num_genes=1056, 
+        num_genes=24622,
         device='cuda',
         seed=0,
         loss_ae='mse',
@@ -26,7 +26,8 @@ def load_VAE():
     return autoencoder
 
 
-adata = sc.read_h5ad('/home/daniilf/scDiffusion/data/onek1k_annotated_train_release_filtered_50k.h5ad')
+#adata = sc.read_h5ad('/home/daniilf/scDiffusion/data/onek1k_annotated_train_release_filtered_50k.h5ad')
+adata = sc.read_h5ad('/home/daniilf/scDiffusion/data/onek1k_annotated_train_release_cleaned.h5ad')
 sc.pp.normalize_total(adata, target_sum=1e4)
 sc.pp.log1p(adata)
 
@@ -122,7 +123,6 @@ adata.obs['cell_type'] = np.concatenate((celltype, gen_class))
 
 adata.obs['cell_name'] = [f"true_Cell" for i in range(cell_data.shape[0])]+[f"gen_Cell" for i in range(cell_gen.shape[0])]
 
-
 # the data is already log norm
 #sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
 #adata.raw = adata
@@ -170,5 +170,6 @@ for category in cato:
     plt.title("Cell Type "+str(category))
 
     # Save the figure
+    print(f"Saved /home/daniilf/cfDiffusion-aml/figures/umap_{str(category)}")
     plt.savefig(f"/home/daniilf/cfDiffusion-aml/figures/umap_{str(category)}.png", bbox_inches='tight')
     plt.close()

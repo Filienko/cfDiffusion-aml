@@ -28,8 +28,8 @@ def model_and_diffusion_defaults(diffusion_steps=1000):
     """
     res = dict(
         input_dim = 128,
-        hidden_dim = [512,512,256,256,128],
-        dropout = 0.0,
+        hidden_dim = [512,512,256,128], #TODO: Automatize [512,512,256,256,128],
+        dropout = 0.0, #0.3,
     )
     res.update(diffusion_defaults(diffusion_steps=diffusion_steps))
     return res

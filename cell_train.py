@@ -32,10 +32,12 @@ import random
 # import os
 # os.environ["CUDA_VISIBLE_DEVICES"]='-1'
 
+print("Before executing")
 def main():
+    print("Started diffusion training")
     setup_seed(1234)
     args_dict = create_argparser()
-
+    print("Setup of dist")
     dist_util.setup_dist()
     # logger.configure(dir='../output/logs/'+args.model_name)  # log file
 

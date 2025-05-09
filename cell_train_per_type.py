@@ -115,12 +115,12 @@ def train_for_cell_type(cell_type_idx, cell_type_name, args_dict):
 def create_argparser():
     defaults = dict(
         schedule_sampler="uniform",
-        lr=1e-4,
+        lr=1e-5,
         weight_decay=0.0001,
         lr_anneal_steps=200000,  # Reduced from 800000 for per-cell-type training
         batch_size=64,  # Reduced batch size as we'll have fewer samples per cell type
         microbatch=-1,  # -1 disables microbatches
-        ema_rate="0.9999",
+        ema_rate="0.99",
         log_interval=1000,
         save_interval=50000,  # Reduced from 400000
         resume_checkpoint="",
